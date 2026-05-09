@@ -3,6 +3,7 @@ import './App.css'
 import Summary from './Summary'
 import TransactionForm from './TransactionForm'
 import TransactionList from './TransactionList'
+import ConfirmModal from './ConfirmModal'
 
 function App() {
   const [transactions, setTransactions] = useState([
@@ -22,6 +23,7 @@ function App() {
   const [category, setCategory] = useState("food");
   const [filterType, setFilterType] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   const categories = ["food", "housing", "utilities", "transport", "entertainment", "salary", "other"];
 
@@ -43,6 +45,14 @@ function App() {
     setAmount("");
     setType("expense");
     setCategory("food");
+  };
+
+  const requestDeleteTransaction = (id) => {
+    setPendingDeleteId(id);
+  };
+
+  const handleDeleteTransaction = (id) => {
+    setTransactions(transactions.filter(t => t.id !== id));
   };
 
 
@@ -73,7 +83,15 @@ function App() {
         filterCategory={filterCategory}
         onFilterTypeChange={setFilterType}
         onFilterCategoryChange={setFilterCategory}
+        onDeleteTransaction={requestDeleteTransaction}
       />
+
+      {pendingDeleteId !== null && (
+        <ConfirmModal
+          onConfirm={() => { handleDeleteTransaction(pendingDeleteId); setPendingDeleteId(null); }}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </div>
   );
 }
